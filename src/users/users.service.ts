@@ -31,11 +31,21 @@ export class UsersService {
     return this.repo.save(user);
   }
 
-  remove() {}
+  async remove(id: number) {
+    const user = await this.findOne(id);
+
+    if (!user) {
+      throw new Error('User not found');
+    }
+
+    return this.repo.remove(user);
+  }
 
   // save vs insert, update
   // save는 먼저 업데이트 하려는 객체를 findOne으로 찾고 save로 업데이트 한다(데이터 베이스를 두 번 들르게 됨)
   // insert, update는 데이터 베이스 한 번에 해결할 수 있음(but, hook이 작동하지 않음.)
 
   // remove vs delete
+  // remove는 객체를 찾은 다음에 제거하고 저장한다(데이터 베이스 두 번 들르게 됨)
+  // delete는 데이터 베이스 한 번에 해결할 수 있음(but, hook이 작동하지 않음.)
 }
