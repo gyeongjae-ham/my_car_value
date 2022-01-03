@@ -12,4 +12,30 @@ export class UsersService {
 
     return this.repo.save(user); // return this.repo.save({email, password})로 하면 hook가 발생하지 않고, db에 객체는 생성됐지만 로그는 찍히지 않는다;;
   }
+
+  findOne(id: number) {
+    return this.repo.findOne({ id });
+  }
+
+  find(email: string) {
+    return this.repo.find({ email });
+  }
+
+  async update(id: number, attrs: Partial<User>) {
+    const user = await this.findOne(id);
+
+    if (!user) {
+      throw new Error('User not found');
+    }
+    Object.assign(user, attrs); // 객체에 해당하지 않은 속성들 다 제거됨
+    return this.repo.save(user);
+  }
+
+  remove() {}
+
+  // save vs insert, update
+  // save는 먼저 업데이트 하려는 객체를 findOne으로 찾고 save로 업데이트 한다(데이터 베이스를 두 번 들르게 됨)
+  // insert, update는 데이터 베이스 한 번에 해결할 수 있음(but, hook이 작동하지 않음.)
+
+  // remove vs delete
 }
