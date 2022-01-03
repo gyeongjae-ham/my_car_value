@@ -10,6 +10,6 @@ export class UsersService {
   create(email: string, password: string) {
     const user = this.repo.create({ email, password }); // createUserDto의 instance가 생성되고 create 된 다음 save해야 데이터 베이스에 저장 됨
 
-    return this.repo.save(user);
+    return this.repo.save(user); // return this.repo.save({email, password})로 하면 hook가 발생하지 않고, db에 객체는 생성됐지만 로그는 찍히지 않는다;;
   }
 }
