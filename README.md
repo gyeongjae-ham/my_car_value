@@ -23,3 +23,15 @@
 | :------------: | :----------------: | :-------------: | :----------------: |
 |  User Module   |  Users Controller  |  Users Service  |  Users Repository  |
 | Reports Module | Reports Controller | Reports Service | Reports Repository |
+
+## Things to remember
+
+- DI Container Flow
+
+1. At startup, register all classes with the container
+2. Container will figure out what each dependency each class has
+   > 1~2 : Use the 'injectable' decorator on each class and add them to the modules list of providers
+3. We then ask the container to create an instance fo a class for us
+4. Container creates all required dependencies and gives us the instance
+   > Happens automatically - Nest will try to create controller instances for us
+5. **Container will hold onto the created dependency instances and reuse them if needed**
