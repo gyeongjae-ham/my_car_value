@@ -60,4 +60,26 @@ describe('AuthService', () => {
       Promise.resolve();
     }
   });
+
+  it('throws if an invalid password is provided', async () => {
+    fakeUsersService.find = () =>
+      Promise.resolve([
+        { id: 1, email: 'asdf@asdfsa.com', password: '12341234' } as User,
+      ]);
+    try {
+      await service.signin('asdf@sadfas.com', 'password');
+    } catch (err) {
+      Promise.resolve();
+    }
+  });
+
+  it('returns a user if correct password is provided', async () => {
+    fakeUsersService.find = () =>
+      Promise.resolve([
+        { email: 'asdf@asdfsa.com', password: '12341234' } as User,
+      ]);
+
+    const user = await service.signin('aasdf@asdf.com', 'mypassword');
+    expect(user).toBeDefined();
+  });
 });
