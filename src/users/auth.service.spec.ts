@@ -5,14 +5,11 @@ import { User } from './user.entity';
 
 describe('AuthService', () => {
   let service: AuthService;
+  let fakeUsersService: Partial<UsersService>;
 
   beforeEach(async () => {
-    // create a fake copy of users service
-    const fakeUsersService: Partial<UsersService> = {
-      // fake userService instance를 만들기 위해서 typescript의 도움을 받기 위해 타입을
-      // UsersService로 지정해 주는데, authService에 해당하는 userService만 구현하기 위해서 Partial 부분을 작성해서 부분 작성이라는 것을 표시해준다
-      // create method는 원래 User 객체를 반환해야 하는데 Dto에 보면 로그를 남기는 부분이 있어서 에러가 발생한다 테스트 할 때 로그까지 구현하고 싶지 않기 때문에
-      // 객체를 as User로 받아서 객체를 반환하는 것처럼 속여서 작성한다
+    // Create a fake copy of the users service
+    fakeUsersService = {
       find: () => Promise.resolve([]),
       create: (email: string, password: string) =>
         Promise.resolve({ id: 1, email, password } as User),
@@ -20,10 +17,11 @@ describe('AuthService', () => {
 
     const module = await Test.createTestingModule({
       providers: [
-        // providers는 모듈 내부에서 의존성 주입할 목록을 나타내고 있다
-        AuthService, // AuthService가 의존하고 있는 UsersService가 필요해진다
-        { provide: UsersService, useValue: fakeUsersService }, // UsersService를 providers에서 찾을거고, 그럼 UsersService 생성 요청이 왔을 때
-        //fakeUsersService를 생성하라는  코드가 실행이 된다
+        AuthService,
+        {
+          provide: UsersService,
+          useValue: fakeUsersService,
+        },
       ],
     }).compile();
 
@@ -34,12 +32,32 @@ describe('AuthService', () => {
     expect(service).toBeDefined();
   });
 
-  it('creates a nes user with a salted and hashed password', async () => {
-    const user = await service.signup('test@test.com', 'test123');
+  it('creates a new user with a salted and hashed password', async () => {
+    const user = await service.signup('asdf@asdf.com', 'asdf');
 
-    expect(user.password).not.toEqual('test123');
+    expect(user.password).not.toEqual('asdf');
     const [salt, hash] = user.password.split('.');
     expect(salt).toBeDefined();
     expect(hash).toBeDefined();
+  });
+
+  it('throws an error if user signs up with email that is in use', async () => {
+    fakeUsersService.find = () =>
+      Promise.resolve([{ id: 1, email: 'a', password: '1' } as User]);
+    try {
+      await service.signup('asdf@asdf.com', 'asdf');
+    } catch (err) {
+      Promise.resolve();
+    }
+  });
+  // 원래 done을 써서 처리한 자리인데 jest 업데이트 되면서 바뀐건지 promise와 done을 같이 못쓴다고 에러 메시지가 떳
+  // done 대신에 promise.resolve로 처리함.
+
+  it('throws if signin is called with an unused email', async () => {
+    try {
+      await service.signin('asdfa@asdfsajd', 'askjsdak');
+    } catch (err) {
+      Promise.resolve();
+    }
   });
 });
