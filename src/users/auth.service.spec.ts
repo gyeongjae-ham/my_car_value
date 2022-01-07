@@ -76,10 +76,14 @@ describe('AuthService', () => {
   it('returns a user if correct password is provided', async () => {
     fakeUsersService.find = () =>
       Promise.resolve([
-        { email: 'asdf@asdfsa.com', password: '12341234' } as User,
+        {
+          email: 'asdf@asdfsa.com',
+          password:
+            '02ac6b4b6452ea96.b4ff10d8b3c1d625e08ffce54f91c47c1e287f343599542bae998d5d0ea48fe9',
+        } as User,
       ]);
 
-    const user = await service.signin('aasdf@asdf.com', 'mypassword');
+    const user = await service.signin('asdf@asdfsa.com', 'mypassword');
     expect(user).toBeDefined();
   });
 });
