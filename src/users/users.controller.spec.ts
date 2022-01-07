@@ -21,8 +21,6 @@ describe('UsersController', () => {
       find: (email: string) => {
         return Promise.resolve([{ id: 1, email, password: 'asdf' } as User]);
       },
-      // remove: () => {},
-      // update: () => {},
     };
     fakeAuthService = {
       signup: (email: string, password: string) => {
